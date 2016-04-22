@@ -1,30 +1,12 @@
 #include <panel.h>
 #include <menu.h>
 #include <string.h>
-#include <stdlib.h>
-#include <menu.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <stdlib.h>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <cstring>
 #include "Explorer.hpp"
 #include "Menu.hpp"
-
-#define NLINES 10
-#define NCOLS 40
-
-void init_wins(WINDOW **wins, int n);
-void win_show(WINDOW *win, char *label, int label_color);
-void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string, chtype color);
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
-#define CTRLD 	4
-
-
 
 void    initColor()
 {
@@ -114,18 +96,19 @@ inline void    *panelLeftPPAGE(Menu *menu, __attribute__((unused))Explorer *exp,
     return NULL;
 }
 
-inline void    *panelLeftSPACE(Menu *menu, __attribute__((unused))Explorer *exp, __attribute__((unused))WINDOW *wind)
+inline void    *panelLeftSPACE(Menu *menu, Explorer *exp, __attribute__((unused))WINDOW *wind)
 {
-    ITEM **items;
-
-    items = menu_items(menu->menu);
-    menu_driver(menu->menu, REQ_TOGGLE_ITEM);
-    int j = 0;
-    for(int i = 0; i < item_count(menu->menu); ++i)
-        if(item_value(items[i]) == TRUE)
-        {
-            ++j;
-        }
+//    ITEM **items;
+//
+//    items = menu_items(menu->menu);
+//    menu_driver(menu->menu, REQ_TOGGLE_ITEM);
+//    int j = 0;
+//    for(int i = 0; i < item_count(menu->menu); ++i)
+//        if(item_value(items[i]) == TRUE)
+//        {
+//            ++j;
+//        }
+    menu->selectItem(exp->getFolder());
     return NULL;
 }
 
@@ -234,7 +217,7 @@ void    eventManager(Menu *menu, Explorer *exp, WINDOW **winds, PANEL **my_panel
             }
             case ' ':
             {
-                actions[SPACE + i](menu, NULL, NULL);
+                actions[SPACE + i](menu, exp, NULL);
                 break;
             }
             case 10:
@@ -324,7 +307,7 @@ void print_in_middle(WINDOW *win, int starty, int startx, int width, char *strin
 		width = 80;
 
 	length = (int) strlen(string);
-	temp = (width - length)/ 2;
+	temp = (width - length) / 2;
 	x = startx + (int)temp;
 	wattron(win, color);
 	mvwprintw(win, y, x, "%s", string);

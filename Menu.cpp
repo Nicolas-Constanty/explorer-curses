@@ -54,4 +54,33 @@ Menu::~Menu() {
     destroy();
 }
 
+void Menu::selectItem(std::string const &folder) {
+
+    int         index;
+    const char  *name = item_name(current_item(menu));
+
+    index = item_index(current_item(menu));
+    if (selectedItems.find(folder) == selectedItems.end())
+    {
+        selectedItems[folder].push_back(std::make_pair(index, name));
+    }
+    if (selectedItems[folder][index].first == index && selectedItems[folder][index].second == name)
+    {
+        selectedItems[folder].erase(selectedItems[folder].begin() + index);
+    }
+    else
+        selectedItems[folder].push_back(std::make_pair(index, name));
+    menu_driver(menu, REQ_TOGGLE_ITEM);
+}
+
+
+
+
+
+
+
+
+
+
+
 

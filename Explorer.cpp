@@ -17,9 +17,21 @@ void Explorer::browse(std::string const &folder)
     struct dirent *ep;
     struct  stat  st;
 
-    m_folder += folder;
-    if (m_folder[m_folder.length() - 1] != '/')
-        m_folder += '/';
+    if (folder == "..")
+    {
+        std::size_t found = m_folder.find_last_of("/");
+        if (found == 0)
+            found = 1;
+        m_folder = m_folder.substr(0, found);
+        found = m_folder.find_last_of("/");
+        if (found == 0)
+            found = 1;
+        m_folder = m_folder.substr(0, found);
+        if (m_folder != "/")
+            m_folder += "/";
+    }
+    else if (folder != "")
+        m_folder += folder + "/";
     dp = opendir (m_folder.c_str());
     list.clear();
     if (dp != NULL)
@@ -64,6 +76,12 @@ void Explorer::sort() {
 const std::pair<std::string, std::string> *Explorer::operator[](size_t i) const {
     return list[i];
 }
+
+std::string Explorer::getFolder() const {
+    return m_folder;
+}
+
+
 
 
 

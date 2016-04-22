@@ -26,6 +26,7 @@ public:
 
 public:
     static int sortPair(const std::pair<std::string, std::string> *firstElem, const std::pair<std::string, std::string> *secondElem);
+    std::string getFolder() const;
 };
 
 
