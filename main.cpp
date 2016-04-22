@@ -6,7 +6,8 @@
 #include <algorithm>
 #include <cstring>
 #include "Explorer.hpp"
-#include "Menu.hpp"
+#include "MenuLeft.hpp"
+#include "MenuRight.hpp"
 
 void    initColor()
 {
@@ -85,180 +86,29 @@ void    setUpPanel(PANEL **my_panels, WINDOW **my_wins)
     doupdate();
 }
 
-enum ACTIONS {
-    UP = 0,
-    DOWN = 3,
-    NPAGE = 6,
-    PPAGE = 9,
-    SPACE = 12,
-    ENTER = 15,
-    PREV = 18
-};
 
-inline void    *panelLeftUP(Menu *menu, __attribute__((unused))Explorer *exp, __attribute__((unused))WINDOW *wind)
-{
-    menu_driver(menu->menu, REQ_UP_ITEM);
-    return NULL;
-}
-
-inline void    *panelLeftDOWN(Menu *menu, __attribute__((unused))Explorer *exp, __attribute__((unused))WINDOW *wind)
-{
-    menu_driver(menu->menu, REQ_DOWN_ITEM);
-    return NULL;
-}
-
-inline void    *panelLeftNPAGE(Menu *menu, __attribute__((unused))Explorer *exp, __attribute__((unused))WINDOW *wind)
-{
-    menu_driver(menu->menu, REQ_SCR_DPAGE);
-    return NULL;
-}
-
-inline void    *panelLeftPPAGE(Menu *menu, __attribute__((unused))Explorer *exp, __attribute__((unused))WINDOW *wind)
-{
-    menu_driver(menu->menu, REQ_SCR_UPAGE);
-    return NULL;
-}
-
-inline void    *panelLeftSPACE(Menu *menu, Explorer *exp, __attribute__((unused))WINDOW *wind)
-{
-//    ITEM **items;
-//
-//    items = menu_items(menu->menu);
-//    menu_driver(menu->menu, REQ_TOGGLE_ITEM);
-//    int j = 0;
-//    for(int i = 0; i < item_count(menu->menu); ++i)
-//        if(item_value(items[i]) == TRUE)
-//        {
-//            ++j;
-//        }
-    menu->selectItem(exp->getFolder());
-    return NULL;
-}
-
-void    *panelLeftENTER(Menu *menu, Explorer *exp, WINDOW *wind)
-{
-    ITEM *cur_item;
-
-    cur_item = current_item(menu->menu);
-    if (item_description(cur_item)[0] == 'D')
-    {
-        wclear(wind);
-        exp->browse(item_name(cur_item));
-        exp->sort();
-        menu->destroy();
-        menu->init(*exp);
-        menu->setup(wind);
-    }
-    return NULL;
-}
-void    *panelLeftPREV(Menu *menu, Explorer *exp, WINDOW *wind)
-{
-    wclear(wind);
-    exp->browse("..");
-    exp->sort();
-    menu->destroy();
-    menu->init(*exp);
-    menu->setup(wind);
-    return NULL;
-}
-
-void    *empty(__attribute__((unused))Menu *menu, __attribute__((unused))Explorer *exp, __attribute__((unused))WINDOW *)
-{
-    return NULL;
-}
-
-void    initActions(void *(*actions[18])(Menu *, Explorer *, WINDOW *))
-{
-    actions[UP] = panelLeftUP;
-    actions[UP + 1] = empty;
-    actions[UP + 2] = empty;
-
-    actions[DOWN] = panelLeftDOWN;
-    actions[DOWN + 1] = empty;
-    actions[DOWN + 2] = empty;
-
-    actions[NPAGE] = panelLeftNPAGE;
-    actions[NPAGE + 1] = empty;
-    actions[NPAGE + 2] = empty;
-
-    actions[PPAGE] = panelLeftPPAGE;
-    actions[PPAGE + 1] = empty;
-    actions[PPAGE + 2] = empty;
-
-    actions[SPACE] = panelLeftSPACE;
-    actions[SPACE + 1] = empty;
-    actions[SPACE + 2] = empty;
-
-    actions[ENTER] = panelLeftENTER;
-    actions[ENTER + 1] = empty;
-    actions[ENTER + 2] = empty;
-
-    actions[PREV] = panelLeftPREV;
-    actions[PREV + 1] = empty;
-    actions[PREV + 2] = empty;
-}
-
-void    eventManager(Menu *menu, Explorer *exp, WINDOW **winds, PANEL **my_panels)
+void    eventManager(MenuLeft *menu_left, MenuRight *menu_right,PANEL **my_panels)
 {
     PANEL   *top;
     int     ch;
     int     i;
-    void    *(*actions[18])(Menu *, Explorer *, WINDOW *);
 
-    initActions(actions);
     i = 0;
     top = my_panels[i];
     while((ch = getch()) != 27) {
-        switch (ch) {
-            case 9: {
-                top = (PANEL *) panel_userptr(top);
-                top_panel(top);
-                if (i < 2)
-                    ++i;
-                else
-                    i = 0;
-            }
-            case KEY_UP:
-            {
-                actions[UP + i](menu, NULL, NULL);
-                break;
-            }
-            case KEY_DOWN:
-            {
-                actions[DOWN + i](menu, NULL, NULL);
-                break;
-            }
-            case KEY_NPAGE:
-            {
-                actions[NPAGE + i](menu, NULL, NULL);
-                break;
-            }
-            case KEY_PPAGE:
-            {
-                actions[PPAGE + i](menu, NULL, NULL);
-                break;
-            }
-            case ' ':
-            {
-                actions[SPACE + i](menu, exp, NULL);
-                break;
-            }
-            case 10:
-            {
-                actions[ENTER + i](menu, exp, winds[0]);
-                break;
-            }
-            case 263:
-            {
-                actions[PREV + i](menu, exp, winds[0]);
-                break;
-            }
-            default:
-            {
-                std::cout << ch << std::endl;
-                break;
-            }
+        if (ch == 9)
+        {
+            top = (PANEL *) panel_userptr(top);
+            top_panel(top);
+            if (i < 2)
+                ++i;
+            else
+                i = 0;
         }
+        if (top == my_panels[0])
+            menu_left->eventManager(ch);
+        else if (top == my_panels[1])
+            menu_right->eventManager(ch);
         update_panels();
         doupdate();
     }
@@ -320,18 +170,19 @@ int     main(int ac, char **av)
 
     WINDOW      *my_wins[3];
     PANEL       *my_panels[3];
+    MenuRight   menu_right;
 
     Explorer    exp((ac < 2) ? "/" : av[1]);
     exp.sort();
-    Menu        menu(exp);
+    MenuLeft        menu_left(exp);
     initCurses();
     initColor();
     init_wins(my_wins, 3);
-    menu.setup(my_wins[0]);
+    menu_left.setup(my_wins[0]);
     traceExplorateur();
     refresh();
     setUpPanel(my_panels, my_wins);
-    eventManager(&menu, &exp, my_wins, my_panels);
+    eventManager(&menu_left, &menu_right, my_panels);
     endwin();
     return 0;
 }

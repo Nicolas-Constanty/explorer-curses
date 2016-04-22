@@ -4,29 +4,15 @@
 
 #include "Menu.hpp"
 
-Menu::Menu(Explorer const exp) {
-    init(exp);
-}
+Menu::Menu() {
 
-void    Menu::init(Explorer const exp)
-{
-    m_choices = exp.getFiles().size();
-    m_items = (ITEM **)calloc((size_t) (m_choices + 1), sizeof(ITEM *));
-    for(size_t  i = 0; i < m_choices; ++i)
-    {
-        m_items[i] = new_item(exp[i]->first.c_str(), exp[i]->second.c_str());
-        item_opts_on(m_items[i], O_SELECTABLE);
-        if (exp[i]->second[0] == 'D')
-            item_opts_off(m_items[i], O_SELECTABLE);
-    }
-    m_items[m_choices] = (ITEM *)NULL;
-    menu = new_menu((ITEM **)m_items);
 }
 
 void    Menu::setup(WINDOW *my_win)
 {
-    set_menu_win(menu, my_win);
-    set_menu_sub(menu, derwin(my_win, LINES - 6, COLS -4, 3, 1));
+    m_wind = my_win;
+    set_menu_win(menu, m_wind);
+    set_menu_sub(menu, derwin(m_wind, LINES - 6, COLS -4, 3, 1));
     set_menu_format(menu, LINES - 10, 1);
 
     set_menu_fore(menu, COLOR_PAIR(5) | A_REVERSE);
@@ -38,7 +24,7 @@ void    Menu::setup(WINDOW *my_win)
     /* Set menu mark to the string " * " */
     set_menu_mark(menu, " > ");
     set_menu_spacing(menu, 0, 0, 3);
-    keypad(my_win, TRUE);
+    keypad(m_wind, TRUE);
     post_menu(menu);
 }
 
@@ -50,37 +36,54 @@ void    Menu::destroy()
     free_menu(menu);
 }
 
+inline void    *Menu::up()
+{
+    menu_driver(menu, REQ_UP_ITEM);
+    return NULL;
+}
+
+inline void    *Menu::down()
+{
+    menu_driver(menu, REQ_DOWN_ITEM);
+    return NULL;
+}
+
+inline void    *Menu::page()
+{
+    menu_driver(menu, REQ_SCR_DPAGE);
+    return NULL;
+}
+
+inline void    *Menu::ppage()
+{
+    menu_driver(menu, REQ_SCR_UPAGE);
+    return NULL;
+}
+
+void            Menu::eventManager(int key)
+{
+    switch (key) {
+        case KEY_UP: {
+            up();
+            break;
+        }
+        case KEY_DOWN: {
+            down();
+            break;
+        }
+        case KEY_NPAGE: {
+            page();
+            break;
+        }
+        case KEY_PPAGE: {
+            ppage();
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 Menu::~Menu() {
     destroy();
 }
-
-void Menu::selectItem(std::string const &folder) {
-
-    int         index;
-    const char  *name = item_name(current_item(menu));
-
-    index = item_index(current_item(menu));
-    if (selectedItems.find(folder) == selectedItems.end())
-    {
-        selectedItems[folder].push_back(std::make_pair(index, name));
-    }
-    if (selectedItems[folder][index].first == index && selectedItems[folder][index].second == name)
-    {
-        selectedItems[folder].erase(selectedItems[folder].begin() + index);
-    }
-    else
-        selectedItems[folder].push_back(std::make_pair(index, name));
-    menu_driver(menu, REQ_TOGGLE_ITEM);
-}
-
-
-
-
-
-
-
-
-
-
-
-

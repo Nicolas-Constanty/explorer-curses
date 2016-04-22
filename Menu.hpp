@@ -5,19 +5,31 @@
 #ifndef EXPLORATEUR_MENU_HPP
 #define EXPLORATEUR_MENU_HPP
 
-#include <menu.h>
-#include <map>
 #include "IMenu.hpp"
-#include "Explorer.hpp"
 
 class Menu : public IMenu {
 public:
-    Menu(Explorer const exp);
-    void    setup(WINDOW *my_win);
-    void    destroy();
-    void    init(const Explorer exp);
-    void    selectItem(std::string const &folder);
-    virtual ~Menu();
+    enum ACTIONS {
+        UP = 0,
+        DOWN = 3,
+        NPAGE = 6,
+        PPAGE = 9,
+        SPACE = 12,
+        ENTER = 15,
+        PREV = 18
+    };
+    Menu();
+    virtual void    setup(WINDOW *my_win);
+    virtual void    destroy();
+    virtual         ~Menu();
+    virtual void    eventManager(int key);
+
+protected:
+    void    *up();
+    void    *down();
+    void    *page();
+    void    *ppage();
+    WINDOW  *m_wind;
 };
 
 

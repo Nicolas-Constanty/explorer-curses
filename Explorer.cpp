@@ -77,9 +77,29 @@ const std::pair<std::string, std::string> *Explorer::operator[](size_t i) const 
     return list[i];
 }
 
-std::string Explorer::getFolder() const {
+std::string const &Explorer::getFolder() const {
     return m_folder;
 }
+
+void Explorer::selectItem(int index, std::string const &name) {
+
+    if (selectedItems.find(m_folder) == selectedItems.end())
+    {
+        selectedItems[m_folder].push_back(std::make_pair(index, name));
+    }
+    if (selectedItems[m_folder][index].first == index && selectedItems[m_folder][index].second == name)
+    {
+        selectedItems[m_folder].erase(selectedItems[m_folder].begin() + index);
+    }
+    else
+        selectedItems[m_folder].push_back(std::make_pair(index, name));
+}
+
+const std::map<std::string, std::vector<std::pair<int, std::string>>> &Explorer::getSelectedItems() const {
+    return selectedItems;
+}
+
+
 
 
 

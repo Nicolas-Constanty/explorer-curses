@@ -14,7 +14,6 @@ class IMenu {
 protected:
     ITEM    **m_items;
     size_t  m_choices;
-    std::map<std::string, std::vector<std::pair<int, std::string>>>    selectedItems;
 
 public:
     MENU    *menu;

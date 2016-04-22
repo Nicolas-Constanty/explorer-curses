@@ -1,7 +1,8 @@
 SRC			=	main.cpp		\
                 Explorer.cpp    \
                 Menu.cpp        \
-
+                MenuLeft.cpp    \
+                MenuRight.cpp    \
 
 CC			=	g++
 
