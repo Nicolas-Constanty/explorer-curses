@@ -2,12 +2,14 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Explorer.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Menu.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Explorer.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/IMenu.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Menu.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Explorer.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Explorer.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/IMenu.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Menu.hpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

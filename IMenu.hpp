@@ -1,0 +1,29 @@
+//
+// Created by consta_n on 22/04/16.
+//
+
+#ifndef EXPLORATEUR_IMENU_HPP
+#define EXPLORATEUR_IMENU_HPP
+
+
+#include <map>
+#include <vector>
+#include <menu.h>
+
+class IMenu {
+protected:
+    ITEM    **m_items;
+    size_t  m_choices;
+    std::map<std::string, std::vector<std::pair<int, std::string>>>    selectedItems;
+
+public:
+    MENU    *menu;
+
+public:
+    virtual ~IMenu() {};
+    virtual void    setup(WINDOW *my_win) = 0;
+    virtual void    destroy() = 0;
+};
+
+
+#endif //EXPLORATEUR_IMENU_HPP
