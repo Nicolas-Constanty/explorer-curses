@@ -37,4 +37,7 @@ public:
 };
 
 
+std::ostream &operator<< (std::ostream& stream, const Explorer& exp);
+
+
 #endif //EXPLORATEUR_EXPLORER_HPP

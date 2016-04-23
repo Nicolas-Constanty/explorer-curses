@@ -97,7 +97,11 @@ void Explorer::selectItem(int index, std::string const &name) {
     else
     {
         if (selectedItems[m_folder].find(st.st_ino) != selectedItems[m_folder].end())
+        {
             selectedItems[m_folder].erase(st.st_ino);
+            if (!selectedItems[m_folder].size())
+                selectedItems.erase(m_folder);
+        }
         else
             selectedItems[m_folder][st.st_ino] = name;
     }
@@ -105,6 +109,14 @@ void Explorer::selectItem(int index, std::string const &name) {
 
 const Explorer::mapmap &Explorer::getSelectedItems() const {
     return selectedItems;
+}
+
+std::ostream &operator<< (std::ostream& stream, const Explorer& exp)
+{
+    for (std::pair<std::string, std::map<ino_t, std::string>> node: exp.getSelectedItems())
+        for (std::pair<int, std::string> elem: node.second)
+            stream << node.first << elem.second << std::endl;
+    return stream;
 }
 
 

@@ -21,6 +21,10 @@ public:
     void            selectItem();
     void            eventManager(MenuRight *menu_right, int key);
     void            setup(WINDOW *wind);
+public:
+    const Explorer &getExp() const {
+        return m_exp;
+    }
 
 private:
     void    *space(MenuRight *menu_right);

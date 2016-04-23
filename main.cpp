@@ -86,28 +86,65 @@ void    setUpPanel(PANEL **my_panels, WINDOW **my_wins)
 }
 
 
-void    eventManager(MenuLeft *menu_left, MenuRight *menu_right,PANEL **my_panels)
+void    eventManager(MenuLeft *menu_left, MenuRight *menu_right, WINDOW *menu_bottom, PANEL **my_panels)
 {
     PANEL   *top;
     int     ch;
-    int     i;
 
-    i = 0;
-    top = my_panels[i];
+    top = my_panels[0];
+    wattron(stdscr, COLOR_PAIR(2) | A_BLINK);
+    mvwaddch(stdscr, 3, COLS / 2 - 2, ACS_DIAMOND);
+    wattroff(stdscr, COLOR_PAIR(2) | A_BLINK);
     while((ch = getch()) != 27) {
         if (ch == 9)
         {
             top = (PANEL *) panel_userptr(top);
             top_panel(top);
-            if (i < 2)
-                ++i;
-            else
-                i = 0;
+            if (top == my_panels[0])
+            {
+                wattron(menu_bottom, COLOR_PAIR(5));
+                mvwprintw(menu_bottom, 0, COLS - 15, "PRESS ENTER");
+                mvwprintw(menu_bottom, 1, COLS - 15, "TO VALIDATE");
+                wattroff(menu_bottom, COLOR_PAIR(5));
+                wattron(stdscr, COLOR_PAIR(2) | A_BLINK);
+                mvwaddch(stdscr, 3, COLS / 2 - 2, ACS_DIAMOND);
+                wattroff(stdscr, COLOR_PAIR(2) | A_BLINK);
+            }
+            else if (top == my_panels[1])
+            {
+                if (!menu_left->getExp().getSelectedItems().size())
+                {
+                    top = (PANEL *) panel_userptr(top);
+                    top_panel(top);
+                }
+                else
+                {
+                    wattron(stdscr, COLOR_PAIR(2));
+                    mvwaddch(stdscr, 3, COLS / 2 - 2, ' ');
+                    wattroff(stdscr, COLOR_PAIR(2));
+                    wattron(stdscr, COLOR_PAIR(2) | A_BLINK);
+                    mvwaddch(stdscr, 3, COLS - 3, ACS_DIAMOND);
+                    wattroff(stdscr, COLOR_PAIR(2) | A_BLINK);
+                }
+            }
+            if (top == my_panels[2])
+            {
+                wattron(stdscr, COLOR_PAIR(2));
+                mvwaddch(stdscr, 3, COLS / 2 - 2, ' ');
+                mvwaddch(stdscr, 3, COLS - 3, ' ');
+                wattroff(stdscr, COLOR_PAIR(2));
+                wattron(menu_bottom, COLOR_PAIR(5) | A_REVERSE | A_BLINK);
+                mvwprintw(menu_bottom, 0, COLS - 15, "PRESS ENTER");
+                mvwprintw(menu_bottom, 1, COLS - 15, "TO VALIDATE");
+                wattroff(menu_bottom, COLOR_PAIR(5) | A_REVERSE | A_BLINK);
+            }
         }
         if (top == my_panels[0])
             menu_left->eventManager(menu_right, ch);
         else if (top == my_panels[1])
             menu_right->eventManager(ch);
+        else if (top == my_panels[2] && ch == 10)
+            break;
         update_panels();
         doupdate();
     }
@@ -138,10 +175,14 @@ void init_wins(WINDOW **wins, int n)
         wbkgd(wins[i], COLOR_PAIR(5));
         wattron(wins[i], COLOR_PAIR(5));
         mvwaddch(wins[i], LINES - 6, COLS / 2, ACS_PLUS);
-        mvwprintw(wins[i], 0, 3, "Arrow Keys to navigate (ESC to Exit)");
-        mvwprintw(wins[i], 1, 3, "Use PageUp and PageDown to scoll down or up a page of items.");
-        mvwprintw(wins[i], 2, 3, "Use Space to select file, Enter to open directory or Tab to switch panel.");
-        mvwprintw(wins[i], 0, COLS / 2 + 2, "Selected file(s) : 0    VALIDER");
+        mvwprintw(wins[i], 0, 2, "Arrow Keys to navigate (ESC to Exit)");
+        mvwprintw(wins[i], 1, 2, "Use PageUp and PageDown to scoll down or up a page of items.");
+        mvwprintw(wins[i], 2, 2, "Use Space to select file, Enter to open directory or Tab to switch panel.");
+        mvwprintw(wins[i], 0, COLS / 2 + 2, "Selected file(s) : 0");
+        wattroff(wins[i], COLOR_PAIR(5));
+        wattron(wins[i], COLOR_PAIR(5));
+        mvwprintw(wins[i], 0, COLS - 15, "PRESS ENTER");
+        mvwprintw(wins[i], 1, COLS - 15, "TO VALIDATE");
         wattroff(wins[i], COLOR_PAIR(5));
   	}
   }
@@ -184,7 +225,8 @@ int     main(int ac, char **av)
     traceExplorateur();
     refresh();
     setUpPanel(my_panels, my_wins);
-    eventManager(&menu_left, &menu_right, my_panels);
+    eventManager(&menu_left, &menu_right, my_wins[2], my_panels);
     endwin();
+    std::cout << menu_left.getExp() << std::endl;
     return 0;
 }

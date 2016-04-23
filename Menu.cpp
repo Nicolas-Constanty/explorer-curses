@@ -2,6 +2,7 @@
 // Created by consta_n on 22/04/16.
 //
 
+#include <ncursesw/menu.h>
 #include "Menu.hpp"
 
 Menu::Menu() {
