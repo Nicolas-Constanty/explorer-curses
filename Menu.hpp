@@ -23,6 +23,7 @@ public:
     virtual void    destroy();
     virtual         ~Menu();
     virtual void    eventManager(int key);
+    WINDOW *getWind() const;
 
 protected:
     void    *up();
@@ -30,6 +31,8 @@ protected:
     void    *page();
     void    *ppage();
     WINDOW  *m_wind;
+
+    void aff();
 };
 
 

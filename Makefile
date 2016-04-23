@@ -14,7 +14,7 @@ CPPFLAGS	=	-W -Wall -Wextra -Werror -g
 
 CPPFLAGS	+=	-std=c++11
 
-LDFLAGS		= 	-lncurses -lmenu -lpanel
+LDFLAGS		= 	-lncursesw -lmenuw -lpanel
 
 OBJ			=	$(SRC:%cpp=%o)
 

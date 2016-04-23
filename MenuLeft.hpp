@@ -8,6 +8,7 @@
 #include <menu.h>
 #include <map>
 #include "Menu.hpp"
+#include "MenuRight.hpp"
 #include "Explorer.hpp"
 
 class MenuLeft : public Menu {
@@ -18,10 +19,11 @@ public:
     MenuLeft(Explorer const &exp);
     void            init();
     void            selectItem();
-    void            eventManager(int key);
+    void            eventManager(MenuRight *menu_right, int key);
+    void            setup(WINDOW *wind);
 
 private:
-    void    *space();
+    void    *space(MenuRight *menu_right);
     void    *enter();
     void    *prev();
 };

@@ -1,13 +1,11 @@
+#include <ncursesw/ncurses.h>
+#include <ncursesw/menu.h>
 #include <panel.h>
-#include <menu.h>
 #include <string.h>
 #include <vector>
 #include <iostream>
-#include <algorithm>
-#include <cstring>
 #include "Explorer.hpp"
 #include "MenuLeft.hpp"
-#include "MenuRight.hpp"
 
 void    initColor()
 {
@@ -60,13 +58,13 @@ void traceExplorateur()
     mvwhline(stdscr, 2, 1, ACS_HLINE, COLS - 2);
     mvwaddch(stdscr, 2, COLS -1, ACS_RTEE);
 
-    mvwaddch(stdscr, LINES - 4, 0, ACS_LTEE);
-    mvwhline(stdscr, LINES - 4, 1, ACS_HLINE, COLS - 2);
-    mvwaddch(stdscr, LINES - 4, COLS -1, ACS_RTEE);
+    mvwaddch(stdscr, LINES - 5, 0, ACS_LTEE);
+    mvwhline(stdscr, LINES - 5, 1, ACS_HLINE, COLS - 2);
+    mvwaddch(stdscr, LINES - 5, COLS -1, ACS_RTEE);
 
     mvwaddch(stdscr, 2, COLS / 2, ACS_TTEE);
-    mvwvline(stdscr, 3, COLS / 2, ACS_VLINE, LINES - 6);
-    mvwaddch(stdscr, LINES - 4, COLS / 2, ACS_BTEE);
+    mvwvline(stdscr, 3, COLS / 2, ACS_VLINE, LINES - 7);
+    mvwaddch(stdscr, LINES - 5, COLS / 2, ACS_BTEE);
 }
 
 void    setUpPanel(PANEL **my_panels, WINDOW **my_wins)
@@ -106,7 +104,7 @@ void    eventManager(MenuLeft *menu_left, MenuRight *menu_right,PANEL **my_panel
                 i = 0;
         }
         if (top == my_panels[0])
-            menu_left->eventManager(ch);
+            menu_left->eventManager(menu_right, ch);
         else if (top == my_panels[1])
             menu_right->eventManager(ch);
         update_panels();
@@ -134,16 +132,16 @@ void init_wins(WINDOW **wins, int n)
     }
     else if (i == 2)
     {
-      wins[i] = newwin(2, COLS -3, LINES - 3, 1);
-      //win_show(wins[i], strdup("Run"), 3);
-      wbkgd(wins[i], COLOR_PAIR(5));
-      wattron(wins[i], COLOR_PAIR(5));
-      mvwaddch(wins[i], LINES - 6, COLS / 2, ACS_PLUS);
-        //mvprintw(LINES - 4, 3, "Use PageUp and PageDown to scoll down or up a page of items");
-      mvwprintw(wins[i], 0, 3, "Arrow Keys to navigate (ESC to Exit)");
-      mvwprintw(wins[i], 1, 3, "Use Space to select file or open directory.");
-      mvwprintw(wins[i], 1, COLS / 2 + 2, "Selected file(s) : 0");
-      wattroff(wins[i], COLOR_PAIR(5));
+        wins[i] = newwin(3, COLS -3, LINES - 4, 1);
+        //win_show(wins[i], strdup("Run"), 3);
+        wbkgd(wins[i], COLOR_PAIR(5));
+        wattron(wins[i], COLOR_PAIR(5));
+        mvwaddch(wins[i], LINES - 6, COLS / 2, ACS_PLUS);
+        mvwprintw(wins[i], 0, 3, "Arrow Keys to navigate (ESC to Exit)");
+        mvwprintw(wins[i], 1, 3, "Use PageUp and PageDown to scoll down or up a page of items.");
+        mvwprintw(wins[i], 2, 3, "Use Space to select file, Enter to open directory or Tab to switch panel.");
+        mvwprintw(wins[i], 0, COLS / 2 + 2, "Selected file(s) : 0");
+        wattroff(wins[i], COLOR_PAIR(5));
   	}
   }
 }
@@ -172,6 +170,7 @@ int     main(int ac, char **av)
     PANEL       *my_panels[3];
     MenuRight   menu_right;
 
+    setlocale(LC_ALL, "");
     Explorer    exp((ac < 2) ? "/" : av[1]);
     exp.sort();
     MenuLeft        menu_left(exp);
@@ -179,6 +178,8 @@ int     main(int ac, char **av)
     initColor();
     init_wins(my_wins, 3);
     menu_left.setup(my_wins[0]);
+    menu_right.init(exp.getSelectedItems());
+    menu_right.setup(my_wins[1]);
     traceExplorateur();
     refresh();
     setUpPanel(my_panels, my_wins);

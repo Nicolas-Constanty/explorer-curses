@@ -2,6 +2,7 @@
 // Created by consta_n on 22/04/16.
 //
 
+#include <memory.h>
 #include "MenuLeft.hpp"
 
 MenuLeft::MenuLeft(Explorer const &exp) : Menu(), m_exp(exp) {
@@ -12,7 +13,8 @@ void    MenuLeft::init()
 {
     m_choices = m_exp.getFiles().size();
     m_items = (ITEM **)calloc((size_t) (m_choices + 1), sizeof(ITEM *));
-    for(size_t  i = 0; i < m_choices; ++i)
+    size_t  i;
+    for(i = 0; i < m_choices; ++i)
     {
         m_items[i] = new_item(m_exp[i]->first.c_str(), m_exp[i]->second.c_str());
         item_opts_on(m_items[i], O_SELECTABLE);
@@ -26,17 +28,22 @@ void    MenuLeft::init()
 void MenuLeft::selectItem() {
 
     int         index;
-    const char  *name = item_name(current_item(menu));
+    std::string name = item_name(current_item(menu));
 
     index = item_index(current_item(menu));
 
-    m_exp.selectItem(index, name);
+    if (item_description(current_item(menu))[0] != 'D')
+        m_exp.selectItem(index, name);
     menu_driver(menu, REQ_TOGGLE_ITEM);
 }
 
-inline void    *MenuLeft::space()
+inline void    *MenuLeft::space(MenuRight *menu_right)
 {
     selectItem();
+    wclear(menu_right->getWind());
+    menu_right->destroy();
+    menu_right->init(m_exp.getSelectedItems());
+    menu_right->refresh();
     return NULL;
 }
 
@@ -68,13 +75,13 @@ inline void    *MenuLeft::prev()
     return NULL;
 }
 
-void MenuLeft::eventManager(int key) {
+void MenuLeft::eventManager(MenuRight *menu_right, int key) {
     Menu::eventManager(key);
     switch (key)
     {
         case ' ':
         {
-           space();
+           space(menu_right);
             break;
         }
         case 10:
@@ -90,4 +97,20 @@ void MenuLeft::eventManager(int key) {
     }
 
 }
+
+void MenuLeft::setup(WINDOW *wind) {
+    Menu::setup(wind);
+    Explorer::mapmap list = m_exp.getSelectedItems();
+    aff();
+    m_choices = m_exp.getFiles().size();
+    for(size_t i = 0; i < m_choices - 1; ++i)
+    {
+        for (std::pair<int, std::string> elem: list[m_exp.getFolder()]) {
+            if (elem.second == std::string(item_name(m_items[i])))
+                set_item_value(m_items[i], true);
+        }
+    }
+}
+
+
 

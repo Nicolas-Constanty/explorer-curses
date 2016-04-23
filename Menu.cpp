@@ -17,7 +17,7 @@ void    Menu::setup(WINDOW *my_win)
 
     set_menu_fore(menu, COLOR_PAIR(5) | A_REVERSE);
     set_menu_back(menu, COLOR_PAIR(5));
-    set_menu_grey(menu, COLOR_PAIR(4));
+    set_menu_grey(menu, COLOR_PAIR(6));
     menu_opts_off(menu, O_ONEVALUE);
     menu_opts_off(menu, O_NONCYCLIC);
 
@@ -25,7 +25,6 @@ void    Menu::setup(WINDOW *my_win)
     set_menu_mark(menu, " > ");
     set_menu_spacing(menu, 0, 0, 3);
     keypad(m_wind, TRUE);
-    post_menu(menu);
 }
 
 void    Menu::destroy()
@@ -84,6 +83,16 @@ void            Menu::eventManager(int key)
     }
 }
 
+void        Menu::aff()
+{
+    post_menu(menu);
+}
+
 Menu::~Menu() {
     destroy();
 }
+
+WINDOW *Menu::getWind() const {
+    return m_wind;
+}
+

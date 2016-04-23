@@ -34,12 +34,14 @@ void Explorer::browse(std::string const &folder)
         m_folder += folder + "/";
     dp = opendir (m_folder.c_str());
     list.clear();
+    int i;
     if (dp != NULL)
     {
         while ((ep = readdir(dp)))
         {
             if (ep->d_name[0] != '.' || ep->d_name[1] != 0)
             {
+                ++i;
                 stat(std::string(m_folder + ep->d_name).c_str(), &st);
                 if (!S_ISREG(st.st_mode))
                     list.push_back(new std::pair<std::string, std::string>(ep->d_name, "D"));
@@ -83,19 +85,22 @@ std::string const &Explorer::getFolder() const {
 
 void Explorer::selectItem(int index, std::string const &name) {
 
+    (void)index;
+    struct  stat  st;
+
+    stat(std::string(m_folder + name).c_str(), &st);
     if (selectedItems.find(m_folder) == selectedItems.end())
-    {
-        selectedItems[m_folder].push_back(std::make_pair(index, name));
-    }
-    if (selectedItems[m_folder][index].first == index && selectedItems[m_folder][index].second == name)
-    {
-        selectedItems[m_folder].erase(selectedItems[m_folder].begin() + index);
-    }
+        selectedItems[m_folder][st.st_ino] = name; //(std::make_pair(st.st_ino, name));
     else
-        selectedItems[m_folder].push_back(std::make_pair(index, name));
+    {
+        if (selectedItems[m_folder].find(st.st_ino) != selectedItems[m_folder].end())
+            selectedItems[m_folder].erase(st.st_ino);
+        else
+            selectedItems[m_folder][st.st_ino] = name;
+    }
 }
 
-const std::map<std::string, std::vector<std::pair<int, std::string>>> &Explorer::getSelectedItems() const {
+const Explorer::mapmap &Explorer::getSelectedItems() const {
     return selectedItems;
 }
 

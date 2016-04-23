@@ -8,7 +8,8 @@
 
 #include <map>
 #include <vector>
-#include <menu.h>
+#include <ncursesw/ncurses.h>
+#include <ncursesw/menu.h>
 
 class IMenu {
 protected:

@@ -11,7 +11,11 @@
 class MenuRight : public Menu {
 public:
     MenuRight();
-    void            init(std::vector<std::pair<int, std::string>>);
+    void    init(Explorer::mapmap);
+
+    void    eventManager(int key);
+    void    refresh();
+    void    setup(WINDOW *wind);
 };
 
 
