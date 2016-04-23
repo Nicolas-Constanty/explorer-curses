@@ -14,11 +14,16 @@ Explorer::Explorer(std::string const &folder) : m_folder(folder) {
 void Explorer::browse(std::string const &folder)
 {
     DIR *dp;
-    struct dirent *ep;
-    struct  stat  st;
-    std::string   last;
+    struct dirent   *ep;
+    struct  stat    st;
+    std::string     last;
+    std::string     real_path;
+    char            buf[PATH_MAX + 1];
 
     last = m_folder;
+    m_folder = std::string(realpath(m_folder.c_str(), buf));
+    if (m_folder[m_folder.size() -1] != '/')
+        m_folder += "/";
     if (folder == "..")
     {
         std::size_t found = m_folder.find_last_of("/");

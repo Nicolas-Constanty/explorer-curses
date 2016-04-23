@@ -18,7 +18,7 @@ void    Menu::setup(WINDOW *my_win)
 
     set_menu_fore(menu, COLOR_PAIR(5) | A_REVERSE);
     set_menu_back(menu, COLOR_PAIR(5));
-    set_menu_grey(menu, COLOR_PAIR(6));
+    set_menu_grey(menu, COLOR_PAIR(6) | A_BOLD);
     menu_opts_off(menu, O_ONEVALUE);
     menu_opts_off(menu, O_NONCYCLIC);
 

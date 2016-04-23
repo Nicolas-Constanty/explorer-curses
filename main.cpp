@@ -4,6 +4,7 @@
 #include <string.h>
 #include <vector>
 #include <iostream>
+#include <limits.h>
 #include "Explorer.hpp"
 #include "MenuLeft.hpp"
 
@@ -54,7 +55,7 @@ void traceExplorateur()
 {
     wbkgd(stdscr, COLOR_PAIR(5));
     box(stdscr, 0, 0);
-    print_in_middle(stdscr, 1, 0, COLS, (char *) "Explorer", COLOR_PAIR(6));
+    print_in_middle(stdscr, 1, 0, COLS, (char *) "Explorer", COLOR_PAIR(6) | A_BOLD);
     mvwaddch(stdscr, 2, 0, ACS_LTEE);
     mvwhline(stdscr, 2, 1, ACS_HLINE, COLS - 2);
     mvwaddch(stdscr, 2, COLS -1, ACS_RTEE);
