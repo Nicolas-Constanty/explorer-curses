@@ -16,7 +16,9 @@ void Explorer::browse(std::string const &folder)
     DIR *dp;
     struct dirent *ep;
     struct  stat  st;
+    std::string   last;
 
+    last = m_folder;
     if (folder == "..")
     {
         std::size_t found = m_folder.find_last_of("/");
@@ -53,7 +55,8 @@ void Explorer::browse(std::string const &folder)
     }
     else
     {
-        perror (std::string("Couldn't open the directory " + m_folder).c_str());
+        m_folder = last;
+        browse("");
     }
 }
 

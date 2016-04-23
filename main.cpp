@@ -23,6 +23,7 @@ void    initCurses()
     start_color();
     cbreak();
     noecho();
+    curs_set(0);
     keypad(stdscr, TRUE);
 }
 
@@ -140,7 +141,7 @@ void init_wins(WINDOW **wins, int n)
         mvwprintw(wins[i], 0, 3, "Arrow Keys to navigate (ESC to Exit)");
         mvwprintw(wins[i], 1, 3, "Use PageUp and PageDown to scoll down or up a page of items.");
         mvwprintw(wins[i], 2, 3, "Use Space to select file, Enter to open directory or Tab to switch panel.");
-        mvwprintw(wins[i], 0, COLS / 2 + 2, "Selected file(s) : 0");
+        mvwprintw(wins[i], 0, COLS / 2 + 2, "Selected file(s) : 0    VALIDER");
         wattroff(wins[i], COLOR_PAIR(5));
   	}
   }
