@@ -14,7 +14,27 @@
 
 class Explorer {
 public:
-    typedef std::map<std::string, std::map<ino_t , std::string>> mapmap;
+    enum Information
+    {
+        PHONE_NUMBER,
+        EMAIL_ADDRESS,
+        IP_ADDRESS
+    };
+    static const char* types[3];
+    class File {
+    public:
+        std::string name;
+        Explorer::Information info;
+        File(std::string const &n = "", Explorer::Information i = Explorer::Information::PHONE_NUMBER) {
+            name = n;
+            info = i;
+        }
+    };
+    typedef Explorer::File file;
+    typedef std::map<std::string, std::map<ino_t , Explorer::file>> mapmap;
+
+    typedef std::pair<std::string, std::map<ino_t, Explorer::file>>  map_iterator;
+    typedef std::pair<ino_t , Explorer::file>                        file_iterator;
 private:
     std::vector<std::pair<std::string, std::string> *>  list;
     std::string                                         m_folder;
@@ -34,6 +54,9 @@ public:
     std::string const &getFolder() const;
 
     void selectItem(int index, std::string const &name);
+
+    void setInfo(ino_t index, Explorer::Information info);
+    Information getInfo(ino_t index);
 };
 
 

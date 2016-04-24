@@ -9,13 +9,17 @@
 #include "Explorer.hpp"
 
 class MenuRight : public Menu {
+private:
+    Explorer    *m_exp;
 public:
-    MenuRight();
-    void    init(Explorer::mapmap);
+    MenuRight(Explorer *);
+    void    init();
 
     void    eventManager(int key);
     void    refresh();
     void    setup(WINDOW *wind);
+
+    void right();
 };
 
 

@@ -7,6 +7,8 @@
 #include <algorithm>
 #include "Explorer.hpp"
 
+const char* Explorer::types[3] = { "PHONE_NUMBER", "EMAIL_ADDRESS", "IP_ADDRESS" };
+
 Explorer::Explorer(std::string const &folder) : m_folder(folder) {
     browse("");
 }
@@ -17,7 +19,6 @@ void Explorer::browse(std::string const &folder)
     struct dirent   *ep;
     struct  stat    st;
     std::string     last;
-    std::string     real_path;
     char            buf[PATH_MAX + 1];
 
     last = m_folder;
@@ -41,14 +42,12 @@ void Explorer::browse(std::string const &folder)
         m_folder += folder + "/";
     dp = opendir (m_folder.c_str());
     list.clear();
-    int i;
     if (dp != NULL)
     {
         while ((ep = readdir(dp)))
         {
             if (ep->d_name[0] != '.' || ep->d_name[1] != 0)
             {
-                ++i;
                 stat(std::string(m_folder + ep->d_name).c_str(), &st);
                 if (!S_ISREG(st.st_mode))
                     list.push_back(new std::pair<std::string, std::string>(ep->d_name, "D"));
@@ -98,7 +97,7 @@ void Explorer::selectItem(int index, std::string const &name) {
 
     stat(std::string(m_folder + name).c_str(), &st);
     if (selectedItems.find(m_folder) == selectedItems.end())
-        selectedItems[m_folder][st.st_ino] = name; //(std::make_pair(st.st_ino, name));
+        selectedItems[m_folder][st.st_ino] = File(name, Information::PHONE_NUMBER); //(std::make_pair(st.st_ino, name));
     else
     {
         if (selectedItems[m_folder].find(st.st_ino) != selectedItems[m_folder].end())
@@ -108,19 +107,33 @@ void Explorer::selectItem(int index, std::string const &name) {
                 selectedItems.erase(m_folder);
         }
         else
-            selectedItems[m_folder][st.st_ino] = name;
+            selectedItems[m_folder][st.st_ino] = File(name, Information::PHONE_NUMBER);
     }
 }
 
-const Explorer::mapmap &Explorer::getSelectedItems() const {
+const   Explorer::mapmap &Explorer::getSelectedItems() const {
     return selectedItems;
+}
+
+void    Explorer::setInfo(ino_t index, Explorer::Information info)
+{
+    if (selectedItems[m_folder].find(index) != selectedItems[m_folder].end())
+        selectedItems[m_folder][index].info = info;
+}
+
+
+Explorer::Information    Explorer::getInfo(ino_t index)
+{
+    if (selectedItems[m_folder].find(index) != selectedItems[m_folder].end())
+        return  selectedItems[m_folder][index].info;
+    return Explorer::Information::PHONE_NUMBER;
 }
 
 std::ostream &operator<< (std::ostream& stream, const Explorer& exp)
 {
-    for (std::pair<std::string, std::map<ino_t, std::string>> node: exp.getSelectedItems())
-        for (std::pair<int, std::string> elem: node.second)
-            stream << node.first << elem.second << std::endl;
+    for (Explorer::map_iterator node: exp.getSelectedItems())
+        for (Explorer::file_iterator elem: node.second)
+            stream << node.first << elem.second.name << " " << Explorer::types[elem.second.info] << "; ";
     return stream;
 }
 

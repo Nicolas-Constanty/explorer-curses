@@ -113,7 +113,7 @@ void    eventManager(MenuLeft *menu_left, MenuRight *menu_right, WINDOW *menu_bo
             }
             else if (top == my_panels[1])
             {
-                if (!menu_left->getExp().getSelectedItems().size())
+                if (!menu_left->getExp()->getSelectedItems().size())
                 {
                     top = (PANEL *) panel_userptr(top);
                     top_panel(top);
@@ -211,23 +211,23 @@ int     main(int ac, char **av)
 
     WINDOW      *my_wins[3];
     PANEL       *my_panels[3];
-    MenuRight   menu_right;
+
 
     setlocale(LC_ALL, "");
     Explorer    exp((ac < 2) ? "/" : av[1]);
     exp.sort();
-    MenuLeft        menu_left(exp);
+    MenuLeft        menu_left(&exp);
+    MenuRight       menu_right(&exp);
     initCurses();
     initColor();
     init_wins(my_wins, 3);
     menu_left.setup(my_wins[0]);
-    menu_right.init(exp.getSelectedItems());
     menu_right.setup(my_wins[1]);
     traceExplorateur();
     refresh();
     setUpPanel(my_panels, my_wins);
     eventManager(&menu_left, &menu_right, my_wins[2], my_panels);
     endwin();
-    std::cout << menu_left.getExp() << std::endl;
+    std::cout << exp << std::endl;
     return 0;
 }

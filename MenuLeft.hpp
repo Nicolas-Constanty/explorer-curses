@@ -13,16 +13,16 @@
 
 class MenuLeft : public Menu {
 protected:
-    Explorer    m_exp;
+    Explorer    *m_exp;
 
 public:
-    MenuLeft(Explorer const &exp);
+    MenuLeft(Explorer *exp);
     void            init();
     void            selectItem();
     void            eventManager(MenuRight *menu_right, int key);
     void            setup(WINDOW *wind);
 public:
-    const Explorer &getExp() const {
+    const Explorer *getExp() const {
         return m_exp;
     }
 
